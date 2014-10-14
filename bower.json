@@ -1,0 +1,13 @@
+{
+  "name": "th-char-data-filter",
+  "version": "0.0.0",
+  "keywords": [
+    "seed",
+    "polymer",
+    "web-components"
+  ],
+  "main": "th-char-data-filter.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.5"
+  }
+}
