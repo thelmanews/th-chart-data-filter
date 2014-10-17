@@ -23,19 +23,43 @@ Converts an array of object to data suitable for thelma charts.
           width: 200px;
         }
 
-      </style>
+        core-selector {
+          border-bottom: 1px solid black;
+        }
 
-      <core-selector id="colums_selector" selected="{{_selectedLabel}}" valueattr="label">
+        core-selector .col {
+          padding: 3px;
+          border: 1px solid #ccc;
+        }
+        core-selector .core-selected {
+          background-color: #ccc;
+          border: 1px solid #888;
+
+        }
+        label {
+          display: block;
+          border-top: 1px solid #AAA;
+        }
+
+
+      </style>
+      <label for="label_selector">Select label column: </label> 
+      <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
+          <div label="">Select one...</div>
         <template repeat="{{attr in _dataAttributes}}">
           <div label="{{attr}}">{{attr}}</div>
         </template>
       </core-selector>
 
+      <label for="">Prefix for label: </label> 
       <core-input value="{{labelPrefix}}" placeHolder="prefix for label"></core-input>
+      <label for="">Rows to pass: </label> 
       <core-input value="{{numberOfRows}}" placeHolder="Number of Rows"></core-input>
 
 
-      <core-selector id="colums_selector" selected="{{_selectedValue}}" valueattr="label">
+      <label for="value_selector">Select label column: </label> 
+      <core-selector id="value_selector" selected="{{_selectedValue}}" valueattr="label">
+          <div label="">Select one...</div>
         <template repeat="{{attr in _dataAttributes}}">
           <div label="{{attr}}">{{attr}}</div>
         </template>
@@ -68,7 +92,7 @@ Converts an array of object to data suitable for thelma charts.
        * Number of rows (dataPoints) to pass to the chart
        * @type {Number}
        */
-      numberOfRows: 52,
+      numberOfRows: 0,
 
       /**
        * Attributes in each dataInput Object
@@ -99,6 +123,7 @@ Converts an array of object to data suitable for thelma charts.
           }
           else {
             self._dataAttributes = attributes;
+            //check if second attribute is numerical
             var firstKeyValue = parseFloat(firstItem[attributes[1]]);
             console.log(firstKeyValue);
             if(firstKeyValue) {
@@ -113,6 +138,9 @@ Converts an array of object to data suitable for thelma charts.
         
 
       },
+      numberOfRowsChanged: function() {
+        this._mapChartData();
+      },
 
       _labelPrefixChanged: function() {
         this._mapChartData();
@@ -122,7 +150,9 @@ Converts an array of object to data suitable for thelma charts.
 
           var self = this;
           var tmp = self.dataInput;
-          tmp = tmp.slice(0, self.numberOfRows);
+          if(self.numberOfRows>0) {
+            tmp = tmp.slice(0, self.numberOfRows);
+          }
           if(tmp.lenght==0) {
             return;
           }
