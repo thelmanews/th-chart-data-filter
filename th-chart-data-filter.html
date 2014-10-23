@@ -2,6 +2,10 @@
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="../core-input/core-input.html">
 
+<link rel="import" href="../core-collapse/core-collapse.html">
+<link rel="import" href="../core-icon-button/core-icon-button.html">
+
+
 
 <!--
 Converts an array of object to data suitable for thelma charts.
@@ -20,7 +24,7 @@ Converts an array of object to data suitable for thelma charts.
   <template>
       <style>
         :host {
-          width: 200px;
+          
           font-family: open-sans, sans-serif;
           font-size: 12px;
 
@@ -46,8 +50,21 @@ Converts an array of object to data suitable for thelma charts.
           border-top: 1px solid #AAA;
         }
 
-
+      .elTitle {
+              color: #2fa3af;
+              padding: 2px;
+      }
+      
       </style>
+      
+      
+
+
+     <span class="elTitle">th-chart-data-filter</span>
+
+    <core-icon-button icon="perm-data-setting" on-click="{{showControls}}"></core-icon-button>
+
+    <core-collapse id="ctrl_collapse">      
       <label for="label_selector">Select label column: </label> 
       <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
         <template repeat="{{attr in _dataAttributes}}">
@@ -67,6 +84,7 @@ Converts an array of object to data suitable for thelma charts.
           <div label="{{attr}}">{{attr}}</div>
         </template>
       </core-selector>
+    </core-collapse>
 
   </template>
 
@@ -166,7 +184,13 @@ Converts an array of object to data suitable for thelma charts.
           console.log(ret);
           self.chartDataOut = ret;
 
-      }
+      },
+
+
+    showControls: function(e) {
+      this.$.ctrl_collapse.toggle();
+    } 
+
 
 
 
