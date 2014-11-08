@@ -78,7 +78,7 @@ Converts an array of object to data suitable for thelma charts.
       <core-input value="{{numberOfRows}}" placeHolder="Number of Rows"></core-input>
 
 
-      <label for="value_selector">Select label column: </label> 
+      <label for="value_selector">Select value column: </label> 
       <core-selector id="value_selector" selected="{{_selectedValue}}" valueattr="label">
         <template repeat="{{attr in _dataAttributes}}">
           <div label="{{attr}}">{{attr}}</div>
@@ -187,9 +187,13 @@ Converts an array of object to data suitable for thelma charts.
       },
 
 
-    showControls: function(e) {
-      this.$.ctrl_collapse.toggle();
-    } 
+      showControls: function(e) {
+        this.$.ctrl_collapse.toggle();
+      }, 
+      outputChanged: function(){
+        console.log("th-chart-data-filter output changed");
+        this.fire('th-output-changed', this);
+      } 
 
 
 
