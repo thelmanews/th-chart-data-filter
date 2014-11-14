@@ -167,6 +167,14 @@ Converts an array of object to data suitable for thelma charts.
         this._mapChartData();
       },
 
+      _selectedLabelChanged: function() {
+        this._mapChartData();
+      },
+
+      _selectedValueChanged: function() {
+        this._mapChartData();
+      },
+
       _mapChartData: function() {
 
           var self = this;
@@ -178,8 +186,15 @@ Converts an array of object to data suitable for thelma charts.
             return;
           }
           var ret = tmp.map(function(item) {
+            var floatValue;
+              if(item[self._selectedValue]) {
+                floatValue = item[self._selectedValue].replace(/\D+/g, '');
+                floatValue = parseFloat(floatValue);
+              } else {
+                floatValue = undefined;
+              }
 
-              return {label: self._labelPrefix+ " "+ item[self._selectedLabel] , value: parseFloat(item[self._selectedValue]), display_value: item[self._selectedValue]  };
+              return {label: self._labelPrefix + " " + item[self._selectedLabel] , value: floatValue, display_value: item[self._selectedValue]  };
           });
           console.log(ret);
           self.output = ret;
@@ -189,11 +204,10 @@ Converts an array of object to data suitable for thelma charts.
 
       showControls: function(e) {
         this.$.ctrl_collapse.toggle();
-      }, 
+      },
       outputChanged: function(){
-        console.log("th-chart-data-filter output changed");
         this.fire('th-output-changed', this);
-      } 
+      }
 
 
 
