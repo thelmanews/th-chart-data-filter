@@ -1,7 +1,7 @@
-th-char-data-filter
+th-chart-data-filter
 ================
 
-See the [component page](http://sepans.github.io/th-char-data-filter) for more information.
+See the [component page](http://sepans.github.io/th-chart-data-filter) for more information.
 
 ## Getting Started
 
