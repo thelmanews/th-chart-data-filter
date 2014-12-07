@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../th-animated/th-animated.html">
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="../core-input/core-input.html">
 <link rel="import" href="../core-collapse/core-collapse.html">
@@ -16,12 +17,12 @@ Converts an array of object to data suitable for thelma charts.
 @status alpha
 @homepage http://thelmanews.github.io/thelma-components
 -->
-<polymer-element name="th-chart-data-filter" attributes="input output autoFlush">
+<polymer-element name="th-chart-data-filter" extends="th-animated" attributes="input output autoFlush">
 
   <template>
       <style>
         :host {
-          
+          min-width: 150px;
           font-family: open-sans, sans-serif;
           font-size: 12px;
 
