@@ -34,12 +34,11 @@ Converts an array of object to data suitable for thelma charts.
         }
 
         core-selector .col {
-          padding: 3px;
-          border: 1px solid #ccc;
+          padding: 1px;
+          border: 1px solid #EEE;
         }
         core-selector .core-selected {
           background-color: #ccc;
-          border: 1px solid #888;
 
         }
         label {
@@ -52,6 +51,10 @@ Converts an array of object to data suitable for thelma charts.
               color: #2fa3af;
               padding: 2px;
       }
+      .selection {
+        max-height: 123px;
+        overflow-y: scroll; 
+      }
       
       </style>
       
@@ -63,12 +66,15 @@ Converts an array of object to data suitable for thelma charts.
     <core-icon-button icon="perm-data-setting" on-click="{{showControls}}"></core-icon-button>
 
     <core-collapse id="ctrl_collapse">      
-      <label for="label_selector">Select label column: </label> 
-      <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
-        <template repeat="{{attr in _dataAttributes}}">
-          <div label="{{attr}}">{{attr}}</div>
-        </template>
-      </core-selector>
+      <div class="selection">
+
+        <label for="label_selector">Select label column: </label> 
+        <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
+          <template repeat="{{attr in _dataAttributes}}">
+            <div class="col" label="{{attr}}">{{attr}}</div>
+          </template>
+        </core-selector>
+      </div>
 
       <label for="">Prefix for label: </label> 
       <input is="core-input" value="{{labelPrefix}}" placeHolder="prefix for label">
@@ -77,12 +83,27 @@ Converts an array of object to data suitable for thelma charts.
 
 
 
-      <label for="value_selector">Select value column: </label> 
-      <core-selector id="value_selector" selected="{{_selectedValue}}" valueattr="label">
-        <template repeat="{{attr in _dataAttributes}}">
-          <div label="{{attr}}">{{attr}}</div>
-        </template>
-      </core-selector>
+      <div class="selection">
+        <label for="value_selector">Select value column: </label> 
+        <core-selector id="value_selector" selected="{{_selectedValue}}" valueattr="label">
+          <template repeat="{{attr in _dataAttributes}}">
+            <div class="col" label="{{attr}}">{{attr}}</div>
+          </template>
+        </core-selector>
+      </div>
+      <div class="selection">
+        <label for="func_selector">Select function:<br> for aggregation (optional)</label>
+        <core-selector id="func_selector" id="" selected="{{_selectedFunc}}" valueattr="label">
+              <div class="col" label="frequency">Frequency</div>
+              <div class="col" label="sum">Sum</div>
+              <div class="col" label="avg">Average</div>
+              <div class="col" label="stddev">Standard Deviation</div>
+              <div class="col" label="variance">Variance</div>
+              <div class="col" label="max">Max</div>
+              <div class="col" label="min">Min</div>
+        </core-selector>
+      </div>
+
     </core-collapse>
 
   </template>
@@ -122,6 +143,8 @@ Converts an array of object to data suitable for thelma charts.
 
 
       _labelPrefix: '',
+
+      _selectedFunc: null,
 
 
       ready: function() {
