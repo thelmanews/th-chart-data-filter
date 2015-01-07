@@ -67,6 +67,15 @@ Converts an array of object to data suitable for thelma charts.
 
     <core-collapse id="ctrl_collapse">      
       <div class="selection">
+        <label for="value_selector">Select Data column(s): </label> 
+        <core-selector id="value_selector" selected="{{_selectedValue}}" valueattr="label">
+          <template repeat="{{attr in _dataAttributes}}">
+            <div class="col" label="{{attr}}">{{attr}}</div>
+          </template>
+        </core-selector>
+      </div>
+
+      <div class="selection">
 
         <label for="label_selector">Select label column: </label> 
         <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
@@ -84,16 +93,9 @@ Converts an array of object to data suitable for thelma charts.
 
 
       <div class="selection">
-        <label for="value_selector">Select value column: </label> 
-        <core-selector id="value_selector" selected="{{_selectedValue}}" valueattr="label">
-          <template repeat="{{attr in _dataAttributes}}">
-            <div class="col" label="{{attr}}">{{attr}}</div>
-          </template>
-        </core-selector>
-      </div>
-      <div class="selection">
         <label for="func_selector">Select function:<br> for aggregation (optional)</label>
         <core-selector id="func_selector" id="" selected="{{_selectedFunc}}" valueattr="label">
+              <div class="col" label="none">None</div>
               <div class="col" label="frequency">Frequency</div>
               <div class="col" label="sum">Sum</div>
               <div class="col" label="avg">Average</div>
@@ -107,6 +109,8 @@ Converts an array of object to data suitable for thelma charts.
     </core-collapse>
 
   </template>
+
+  <script src="../underscore/underscore-min.js"></script>
 
   <script>
 
@@ -197,6 +201,10 @@ Converts an array of object to data suitable for thelma charts.
         this._mapChartData();
       },
 
+      _selectedFuncChanged: function() {
+        this._mapChartData();
+      },
+
       _mapChartData: function() {
 
           var self = this;
@@ -207,17 +215,30 @@ Converts an array of object to data suitable for thelma charts.
           if(tmp.lenght==0) {
             return;
           }
-          var ret = tmp.map(function(item) {
-            var floatValue;
-              if(item[self._selectedValue]) {
-                floatValue = item[self._selectedValue].replace(/\D+/g, '');
-                floatValue = parseFloat(floatValue);
-              } else {
-                floatValue = undefined;
-              }
+          var ret = [];
+          if(self._selectedFunc===null || self._selectedFunc==='none')
+          {
+            ret = tmp.map(function(item) {
+              var floatValue;
+                if(item[self._selectedValue]) {
+                  floatValue = item[self._selectedValue].replace(/\D+/g, '');
+                  floatValue = parseFloat(floatValue);
+                } else {
+                  floatValue = undefined;
+                }
 
-              return {label: self._labelPrefix + " " + item[self._selectedLabel] , value: floatValue, display_value: item[self._selectedValue]  };
-          });
+                return {label: self._labelPrefix + " " + item[self._selectedLabel] , value: floatValue, display_value: item[self._selectedValue]  };
+            });
+          }
+          else if (self._selectedFunc!==null && self._selectedFunc==='frequency'){
+
+           
+           ret = _.chain(tmp)
+                .countBy(function(item) { return item[self._selectedValue]; } )
+                .map(function(value, key) { return {'label': key, 'value': value} })
+                .value();
+
+          }
           console.log(ret);
           self.output = ret;
 
