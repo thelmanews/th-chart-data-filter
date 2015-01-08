@@ -4,6 +4,9 @@
 <link rel="import" href="../core-input/core-input.html">
 <link rel="import" href="../core-collapse/core-collapse.html">
 <link rel="import" href="../core-icon-button/core-icon-button.html">
+<link rel="import" href="../core-menu/core-menu.html">
+<link rel="import" href="../core-item/core-item.html">
+
 
 <!--
 Converts an array of object to data suitable for thelma charts.
@@ -44,12 +47,25 @@ Converts an array of object to data suitable for thelma charts.
         label {
           display: block;
           color: #2fa3af;
-          border-top: 1px solid #AAA;
         }
 
-      .elTitle {
-              color: #2fa3af;
-              padding: 2px;
+
+      .collapse-btn {
+          color: #2fa3af;
+          display: block;
+          text-decoration: none;
+          font-weight: bold;
+          padding: 1px 0;
+      }
+      .collapse-btn:before {
+        content: ' * ';
+      }
+
+      .selection {
+        border-top: 2px solid #2fa3af;
+        padding: 2px;
+        max-width: 200px;
+
       }
       .selection core-selector {
         max-height: 123px;
@@ -74,62 +90,81 @@ Converts an array of object to data suitable for thelma charts.
           </template>
         </core-selector>
       </div>
-<!--
-      <div class="selection">
-
-        <label for="label_selector">Select label column: </label> 
-        <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
-          <template repeat="{{attr in _dataAttributes}}">
-            <div class="col" label="{{attr}}">{{attr}}</div>
-          </template>
-        </core-selector>
-      </div>
-
-      <label for="">Prefix for label: </label> 
-      <input is="core-input" value="{{labelPrefix}}" placeHolder="prefix for label">
-
-    -->
-      <label for="">Rows to pass (0 for all):</label> 
-      <input is="core-input" value="{{numberOfRows}}" placeHolder="Number of Rows">
-
 
 
       <div class="selection">
-        <label for="func_selector">Select function:<br> for aggregation (optional)</label>
-        <core-selector id="func_selector" id="" selected="{{_selectedFunc}}" valueattr="label">
-                  <div class="col" label="none">None</div>
-                  <div class="col" label="frequency">Frequency</div>
-              <template if="{{_whereColumnNumeric}}">
-                <template repeat="{{func in _numericFunctions}}">
-                  <div class="col" label="{{func.label}}">{{func.name}}</div>
-                </template>
+        <a class="collapse-btn label_collapse" href="javascript:void(0)" on-click="{{showCollapse}}">Select Label</a>
+        <core-collapse id="label_collapse">      
+
+
+            <label for="label_selector">Select label column: </label> 
+            <core-selector id="label_selector" selected="{{_selectedLabel}}" valueattr="label">
+              <template repeat="{{attr in _dataAttributes}}">
+                <div class="col" label="{{attr}}">{{attr}}</div>
               </template>
-        </core-selector>
+            </core-selector>
+
+
+          <label for="">Prefix for label: </label> 
+          <input is="core-input" value="{{labelPrefix}}" placeHolder="prefix for label">
+        </core-collapse>
+
+      </div>
+    
+
+      <div class="selection">
+        <a class="collapse-btn function_collapse" href="javascript:void(0)" on-click="{{showCollapse}}">Aggregate functions on Value</a>
+        <core-collapse id="function_collapse">
+            <p class="info">Apply an aggregate function on value column.</p>
+            <label for="func_selector">Select function:<br></label>
+            <core-selector id="func_selector" id="" selected="{{_selectedFunc}}" valueattr="label">
+                      <div class="col" label="none">None</div>
+                      <div class="col" label="frequency">Frequency</div>
+                  <template if="{{_whereColumnNumeric}}">
+                    <template repeat="{{func in _numericFunctions}}">
+                      <div class="col" label="{{func.label}}">{{func.name}}</div>
+                    </template>
+                  </template>
+            </core-selector>
+        </core-collapse>
+      </div>
+
+      
+      <div class="selection">
+        <a class="collapse-btn where_collapse" href="javascript:void(0)" on-click="{{showCollapse}}">Filter rows by Where Clause</a>
+        <core-collapse id="where_collapse">
+            <p class="info">Apply a filter on another column to norrow down the results.</p>
+            <label for="func_selector">Filter on column:</label>
+            <core-selector id="value_selector" selected="{{_whereColumn}}" valueattr="label">
+                <div class="col" label="none">None</div>
+              <template repeat="{{attr in _dataAttributes}}">
+                <div class="col" label="{{attr}}">{{attr}}</div>
+              </template>
+            </core-selector>
+            <label for="where_ops_selector">where operator:</label>
+            <core-selector id="where_ops_selector" selected="{{_whereOperator}}" valueattr="label">
+                  <div class="col" label="eq">Equal</div>
+                  <!--
+                  <div class="col" label="ne">Not Equal</div>
+                  <div class="col" label="gt">Greater than</div>
+                  <div class="col" label="st">Smaller than</div>
+                  -->
+            </core-selector>
+            <label for="where_ops_selector">criteria:</label>
+            <core-selector id="value_selector" selected="{{_whereClause}}" valueattr="label">
+              <template repeat="{{option in _whereOptions}}">
+                <div class="col" label="{{option.value}}">{{option.value}}-{{option.count}}</div>
+              </template>
+            </core-selector>
+            or
+            <input is="core-input" value="{{_whereClause}}" placeHolder="(e.g. blank or  New York)"></input>
+        </core-collapse>
       </div>
 
       <div class="selection">
-        <label for="func_selector">Where (optional):</label>
-        <core-selector id="value_selector" selected="{{_whereColumn}}" valueattr="label">
-            <div class="col" label="none">None</div>
-          <template repeat="{{attr in _dataAttributes}}">
-            <div class="col" label="{{attr}}">{{attr}}</div>
-          </template>
-        </core-selector>
-        <core-selector id="value_selector" selected="{{_whereOperator}}" valueattr="label">
-              <div class="col" label="eq">Equal</div>
-              <!--
-              <div class="col" label="ne">Not Equal</div>
-              <div class="col" label="gt">Greater than</div>
-              <div class="col" label="st">Smaller than</div>
-              -->
-        </core-selector>
-        <core-selector id="value_selector" selected="{{_whereClause}}" valueattr="label">
-          <template repeat="{{option in _whereOptions}}">
-            <div class="col" label="{{option.value}}">{{option.value}}-{{option.count}}</div>
-          </template>
-        </core-selector>
-        or
-        <input is="core-input" value="{{_whereClause}}" placeHolder="(e.g. blank or  New York)"></input>
+        <label for="">Rows to pass (0 for all):</label> 
+        <input is="core-input" value="{{numberOfRows}}" placeHolder="Number of Rows">
+
       </div>
 
     </core-collapse>
@@ -313,12 +348,25 @@ Converts an array of object to data suitable for thelma charts.
                 .sortBy(function(item) { return item.count})
                 .reverse()
                 .value();
+        console.log(self._whereOptions);
       },
 
 
       showControls: function(e) {
         this.$.ctrl_collapse.toggle();
       },
+
+      showCollapse: function(e) {
+        var colId = e.target.classList[1];
+        if(colId=='function_collapse' && this.$.label_collapse.opened) {
+          this.$.label_collapse.toggle();
+        }
+        if(colId=='label_collapse' && this.$.function_collapse.opened) {
+          this.$.function_collapse.toggle();
+        }
+        this.$[colId].toggle();
+      },
+
       outputChanged: function(){
         this.fire('th-output-changed', this);
       }
