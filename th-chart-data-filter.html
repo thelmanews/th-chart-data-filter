@@ -51,7 +51,7 @@ Converts an array of object to data suitable for thelma charts.
               color: #2fa3af;
               padding: 2px;
       }
-      .selection {
+      .selection core-selector {
         max-height: 123px;
         overflow-y: scroll; 
       }
@@ -74,7 +74,7 @@ Converts an array of object to data suitable for thelma charts.
           </template>
         </core-selector>
       </div>
-
+<!--
       <div class="selection">
 
         <label for="label_selector">Select label column: </label> 
@@ -87,6 +87,8 @@ Converts an array of object to data suitable for thelma charts.
 
       <label for="">Prefix for label: </label> 
       <input is="core-input" value="{{labelPrefix}}" placeHolder="prefix for label">
+
+    -->
       <label for="">Rows to pass (0 for all):</label> 
       <input is="core-input" value="{{numberOfRows}}" placeHolder="Number of Rows">
 
@@ -95,15 +97,39 @@ Converts an array of object to data suitable for thelma charts.
       <div class="selection">
         <label for="func_selector">Select function:<br> for aggregation (optional)</label>
         <core-selector id="func_selector" id="" selected="{{_selectedFunc}}" valueattr="label">
-              <div class="col" label="none">None</div>
-              <div class="col" label="frequency">Frequency</div>
-              <div class="col" label="sum">Sum</div>
-              <div class="col" label="avg">Average</div>
-              <div class="col" label="stddev">Standard Deviation</div>
-              <div class="col" label="variance">Variance</div>
-              <div class="col" label="max">Max</div>
-              <div class="col" label="min">Min</div>
+                  <div class="col" label="none">None</div>
+                  <div class="col" label="frequency">Frequency</div>
+              <template if="{{_whereColumnNumeric}}">
+                <template repeat="{{func in _numericFunctions}}">
+                  <div class="col" label="{{func.label}}">{{func.name}}</div>
+                </template>
+              </template>
         </core-selector>
+      </div>
+
+      <div class="selection">
+        <label for="func_selector">Where (optional):</label>
+        <core-selector id="value_selector" selected="{{_whereColumn}}" valueattr="label">
+            <div class="col" label="none">None</div>
+          <template repeat="{{attr in _dataAttributes}}">
+            <div class="col" label="{{attr}}">{{attr}}</div>
+          </template>
+        </core-selector>
+        <core-selector id="value_selector" selected="{{_whereOperator}}" valueattr="label">
+              <div class="col" label="eq">Equal</div>
+              <!--
+              <div class="col" label="ne">Not Equal</div>
+              <div class="col" label="gt">Greater than</div>
+              <div class="col" label="st">Smaller than</div>
+              -->
+        </core-selector>
+        <core-selector id="value_selector" selected="{{_whereClause}}" valueattr="label">
+          <template repeat="{{option in _whereOptions}}">
+            <div class="col" label="{{option.value}}">{{option.value}}-{{option.count}}</div>
+          </template>
+        </core-selector>
+        or
+        <input is="core-input" value="{{_whereClause}}" placeHolder="(e.g. blank or  New York)"></input>
       </div>
 
     </core-collapse>
@@ -150,6 +176,20 @@ Converts an array of object to data suitable for thelma charts.
 
       _selectedFunc: null,
 
+      _numericFunctions: [  
+              {label:'sum', name: 'Sum'},
+              {label:'avg', name: 'Average'},
+              {label:'stddev', name: 'Standard Deviation'},
+              {label:'variance', name: 'Variance'},
+              {label:'max', name: 'Max'},
+              {label:'min', name: 'Min'}
+            ],
+
+      _whereColumnNumeric: false,
+
+
+
+
 
       ready: function() {
 
@@ -172,7 +212,6 @@ Converts an array of object to data suitable for thelma charts.
             self._dataAttributes = attributes;
             //check if second attribute is numerical
             var firstKeyValue = parseFloat(firstItem[attributes[1]]);
-            console.log(firstKeyValue);
             if(firstKeyValue) {
               self._selectedLabel = attributes[0];
               self._selectedValue = attributes[1];
@@ -198,24 +237,40 @@ Converts an array of object to data suitable for thelma charts.
       },
 
       _selectedValueChanged: function() {
-        this._mapChartData();
+        var self = this;
+        self._mapChartData();
+        //var plucked = _.pluck(self.input, self._selectedValue);
+        self._whereColumnNumeric = _.every(_.pluck(self.input, self._selectedValue), function(n) {
+         return !isNaN(parseFloat(n)) && isFinite(n);
+        });
       },
 
       _selectedFuncChanged: function() {
         this._mapChartData();
       },
 
+      _whereClauseChanged: function() {
+        this._mapChartData();
+      },
+
+      _whereColumnChanged: function() {
+        this._updateWhereClauses();
+      },
+
       _mapChartData: function() {
 
           var self = this;
           var tmp = self.input;
-          if(self.numberOfRows>0) {
-            tmp = tmp.slice(0, self.numberOfRows);
-          }
           if(tmp.lenght==0) {
             return;
           }
           var ret = [];
+
+          if(self._whereColumn && self._whereColumn!=='none' && self._whereClause && self._whereClause.length>0) {
+            tmp = _.filter(tmp,function(element) {
+              return element[self._whereColumn]===self._whereClause;
+            })
+          }
           if(self._selectedFunc===null || self._selectedFunc==='none')
           {
             ret = tmp.map(function(item) {
@@ -236,12 +291,28 @@ Converts an array of object to data suitable for thelma charts.
            ret = _.chain(tmp)
                 .countBy(function(item) { return item[self._selectedValue]; } )
                 .map(function(value, key) { return {'label': key, 'value': value} })
+                .sortBy(function(item) { return item.value})
+                .reverse()
                 .value();
 
           }
-          console.log(ret);
+
+          if(self.numberOfRows>0) {
+            ret = ret.slice(0, self.numberOfRows);
+          }
+
           self.output = ret;
 
+      },
+
+      _updateWhereClauses: function() {
+        var self = this;
+        self._whereOptions = _.chain(self.input)
+                .countBy(function(item) { return item[self._whereColumn]; } )
+                .map(function(value, key) { return {'value': key, 'count': value} })
+                .sortBy(function(item) { return item.count})
+                .reverse()
+                .value();
       },
 
 
