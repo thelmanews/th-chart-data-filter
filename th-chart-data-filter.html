@@ -7,6 +7,9 @@
 <link rel="import" href="../core-menu/core-menu.html">
 <link rel="import" href="../core-item/core-item.html">
 
+<link rel="import" href="../th-data-criterion/th-data-criterion.html">
+
+
 
 <!--
 Converts an array of object to data suitable for thelma charts.
@@ -131,8 +134,12 @@ Converts an array of object to data suitable for thelma charts.
 
       
       <div class="selection">
-        <a class="collapse-btn where_collapse" href="javascript:void(0)" on-click="{{showCollapse}}">Filter rows by Where Clause</a>
+        <a class="collapse-btn where_collapse" href="javascript:void(0)" on-click="{{showCollapse}}">Filter rows by criterion</a>
         <core-collapse id="where_collapse">
+            <th-data-criterion input="{{input}}" included="true"
+            whereClause="{{_whereClause}}" whereOperator="{{_whereOperator}}" whereColumn="{{_whereColumn}}">
+            </th-data-criterion>
+            <!--
             <p class="info">Apply a filter on another column to norrow down the results.</p>
             <label for="func_selector">Filter on column:</label>
             <core-selector id="value_selector" selected="{{_whereColumn}}" valueattr="label">
@@ -144,11 +151,7 @@ Converts an array of object to data suitable for thelma charts.
             <label for="where_ops_selector">where operator:</label>
             <core-selector id="where_ops_selector" selected="{{_whereOperator}}" valueattr="label">
                   <div class="col" label="eq">Equal</div>
-                  <!--
-                  <div class="col" label="ne">Not Equal</div>
-                  <div class="col" label="gt">Greater than</div>
-                  <div class="col" label="st">Smaller than</div>
-                  -->
+
             </core-selector>
             <label for="where_ops_selector">criteria:</label>
             <core-selector id="value_selector" selected="{{_whereClause}}" valueattr="label">
@@ -158,6 +161,7 @@ Converts an array of object to data suitable for thelma charts.
             </core-selector>
             or
             <input is="core-input" value="{{_whereClause}}" placeHolder="(e.g. blank or  New York)"></input>
+            -->
         </core-collapse>
       </div>
 
@@ -171,7 +175,7 @@ Converts an array of object to data suitable for thelma charts.
 
   </template>
 
-  <script src="../underscore/underscore-min.js"></script>
+  <script src="../lodash/dist/lodash.js"></script>
 
   <script>
 
