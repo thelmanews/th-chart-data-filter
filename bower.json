@@ -13,6 +13,6 @@
     "core-collapse": "polymer/core-collapse#~0.5.1",
     "core-icon-button": "polymer/core-icon-button#~0.5.1",
     "core-input": "polymer/core-input#~0.5.1",
-    "lodash": "~2.4.1"
+    "lodash": "~3.0.0"
   }
 }
